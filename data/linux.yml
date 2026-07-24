@@ -1,0 +1,82 @@
+version: 1
+entries:
+  - id: linux-ssh
+    trigger: :ssh
+    title: SSH 连接
+    description: 使用主机或 ~/.ssh/config 别名连接，不保存服务器密码。
+    category: linux
+    template: "ssh {{host}}"
+    variables:
+      - {name: host, label: 主机或别名, type: text, default: SSH_HOST}
+    tags: [ssh, server]
+    platform: all
+    risk_level: safe
+    favorite: true
+
+  - id: linux-find-port
+    trigger: :linux-port
+    title: 查找端口占用
+    description: 使用 ss 查询监听端口及关联进程。
+    category: linux
+    template: "sudo ss -lntp 'sport = :{{port}}'"
+    variables:
+      - {name: port, label: 端口, type: text, default: PORT}
+    tags: [port, process, debug]
+    platform: linux
+    risk_level: read
+
+  - id: linux-disk
+    trigger: :linux-disk
+    title: 查看磁盘使用率
+    description: 查看文件系统类型、容量和挂载点。
+    category: linux
+    template: "df -hT"
+    tags: [disk, filesystem]
+    platform: linux
+    risk_level: read
+
+  - id: linux-memory
+    trigger: :linux-memory
+    title: 查看内存
+    description: 查看内存和 Swap 使用情况。
+    category: linux
+    template: "free -h"
+    tags: [memory, swap]
+    platform: linux
+    risk_level: read
+
+  - id: linux-top-process
+    trigger: :linux-top-process
+    title: 查看高占用进程
+    description: 按 CPU 使用率倒序查看前 20 个进程。
+    category: linux
+    template: "ps aux --sort=-%cpu | head -n 21"
+    tags: [process, cpu, debug]
+    platform: linux
+    risk_level: read
+
+  - id: linux-journal
+    trigger: :linux-journal
+    title: 跟踪服务日志
+    description: 使用 journalctl 跟踪指定 systemd 服务的最近日志。
+    category: linux
+    template: "sudo journalctl -u {{service}} -n {{lines}} --follow"
+    variables:
+      - {name: service, label: 服务名, type: text, default: SERVICE_NAME}
+      - {name: lines, label: 初始行数, type: text, default: "200"}
+    tags: [systemd, logs, service]
+    platform: linux
+    risk_level: read
+
+  - id: linux-tail
+    trigger: :linux-tail
+    title: 跟踪文件日志
+    description: 从最后 200 行开始持续查看日志文件。
+    category: linux
+    template: "tail -n {{lines}} -F {{file}}"
+    variables:
+      - {name: lines, label: 初始行数, type: text, default: "200"}
+      - {name: file, label: 日志文件, type: text, default: LOG_FILE}
+    tags: [logs, file, follow]
+    platform: linux
+    risk_level: read

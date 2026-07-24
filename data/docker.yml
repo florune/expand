@@ -1,0 +1,88 @@
+version: 1
+entries:
+  - id: docker-ps
+    trigger: :docker-ps
+    title: 查看运行中容器
+    description: 以紧凑表格查看容器、镜像、状态和端口。
+    category: docker
+    template: "docker ps --format \"table {{.Names}}\\t{{.Image}}\\t{{.Status}}\\t{{.Ports}}\""
+    tags: [container, status]
+    platform: all
+    risk_level: read
+    favorite: true
+
+  - id: docker-follow-logs
+    trigger: :docker-logs
+    title: 跟踪容器日志
+    description: 从最后 200 行开始持续查看指定容器日志。
+    category: docker
+    template: "docker logs --tail {{lines}} --follow {{container}}"
+    variables:
+      - {name: lines, label: 初始行数, type: text, default: "200"}
+      - {name: container, label: 容器名, type: text, default: CONTAINER_NAME}
+    tags: [logs, follow]
+    platform: all
+    risk_level: read
+    favorite: true
+
+  - id: docker-logs-since
+    trigger: :docker-logs-since
+    title: 查看最近日志
+    description: 查看指定时间范围内的容器日志。
+    category: docker
+    template: "docker logs --since {{since}} --timestamps {{container}}"
+    variables:
+      - {name: since, label: 起始时间, type: text, default: 30m}
+      - {name: container, label: 容器名, type: text, default: CONTAINER_NAME}
+    tags: [logs, time, debug]
+    platform: all
+    risk_level: read
+
+  - id: docker-inspect
+    trigger: :docker-inspect
+    title: 查看容器详情
+    description: 查看容器完整配置和运行状态。
+    category: docker
+    template: "docker inspect {{container}}"
+    variables:
+      - {name: container, label: 容器名, type: text, default: CONTAINER_NAME}
+    tags: [inspect, config]
+    platform: all
+    risk_level: read
+
+  - id: docker-stats
+    trigger: :docker-stats
+    title: 查看容器资源
+    description: 持续查看容器 CPU、内存、网络和 IO。
+    category: docker
+    template: "docker stats {{container}}"
+    variables:
+      - {name: container, label: 容器名, type: text, default: CONTAINER_NAME}
+    tags: [cpu, memory, monitor]
+    platform: all
+    risk_level: read
+
+  - id: docker-exec-shell
+    trigger: :docker-shell
+    title: 进入容器 Shell
+    description: 使用 sh 进入指定容器，兼容多数精简镜像。
+    category: docker
+    template: "docker exec -it {{container}} sh"
+    variables:
+      - {name: container, label: 容器名, type: text, default: CONTAINER_NAME}
+    tags: [exec, shell]
+    platform: all
+    risk_level: write
+
+  - id: docker-compose-logs
+    trigger: :docker-compose-logs
+    title: 跟踪 Compose 服务日志
+    description: 跟踪指定 Compose 服务的最近日志。
+    category: docker
+    template: "docker compose logs --tail {{lines}} --follow {{service}}"
+    variables:
+      - {name: lines, label: 初始行数, type: text, default: "200"}
+      - {name: service, label: 服务名, type: text, default: SERVICE_NAME}
+    tags: [compose, logs]
+    platform: all
+    risk_level: read

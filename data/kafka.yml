@@ -1,0 +1,104 @@
+version: 1
+entries:
+  - id: kafka-list-groups
+    trigger: :kafka-groups
+    title: 查看消费者组
+    description: 列出 Kafka 集群中的消费者组。
+    category: kafka
+    template: "kafka-consumer-groups.sh --bootstrap-server {{bootstrap}} --list"
+    variables:
+      - {name: bootstrap, label: Bootstrap Servers, type: text, default: KAFKA_BOOTSTRAP_SERVERS}
+    tags: [consumer, group, list]
+    platform: all
+    risk_level: read
+    favorite: true
+
+  - id: kafka-describe-group
+    trigger: :kafka-group
+    title: 查看消费者组详情
+    description: 查看消费位点、最新位点和积压量。
+    category: kafka
+    template: |-
+      kafka-consumer-groups.sh \
+        --bootstrap-server {{bootstrap}} \
+        --describe \
+        --group {{group}}
+    variables:
+      - {name: bootstrap, label: Bootstrap Servers, type: text, default: KAFKA_BOOTSTRAP_SERVERS}
+      - {name: group, label: Consumer Group, type: text, default: KAFKA_CONSUMER_GROUP}
+    tags: [offset, lag, consumer]
+    platform: all
+    risk_level: read
+    favorite: true
+
+  - id: kafka-list-topics
+    trigger: :kafka-topics
+    title: 查看 Topic
+    description: 列出 Kafka 集群中的 Topic。
+    category: kafka
+    template: "kafka-topics.sh --bootstrap-server {{bootstrap}} --list"
+    variables:
+      - {name: bootstrap, label: Bootstrap Servers, type: text, default: KAFKA_BOOTSTRAP_SERVERS}
+    tags: [topic, list]
+    platform: all
+    risk_level: read
+
+  - id: kafka-describe-topic
+    trigger: :kafka-topic
+    title: 查看 Topic 详情
+    description: 查看 Topic 分区、副本和 ISR 状态。
+    category: kafka
+    template: "kafka-topics.sh --bootstrap-server {{bootstrap}} --describe --topic {{topic}}"
+    variables:
+      - {name: bootstrap, label: Bootstrap Servers, type: text, default: KAFKA_BOOTSTRAP_SERVERS}
+      - {name: topic, label: Topic, type: text, default: KAFKA_TOPIC}
+    tags: [topic, partition, replica]
+    platform: all
+    risk_level: read
+
+  - id: kafka-consume
+    trigger: :kafka-consume
+    title: 从 Topic 消费消息
+    description: 从最早位点开始消费并打印 Key，适合临时排查。
+    category: kafka
+    template: "kafka-console-consumer.sh --bootstrap-server {{bootstrap}} --topic {{topic}} --from-beginning --property print.key=true"
+    variables:
+      - {name: bootstrap, label: Bootstrap Servers, type: text, default: KAFKA_BOOTSTRAP_SERVERS}
+      - {name: topic, label: Topic, type: text, default: KAFKA_TOPIC}
+    tags: [consumer, message, debug]
+    platform: all
+    risk_level: read
+
+  - id: kafka-produce
+    trigger: :kafka-produce
+    title: 向 Topic 发送消息
+    description: 打开交互式 Producer；输入内容会写入指定 Topic。
+    category: kafka
+    template: "kafka-console-producer.sh --bootstrap-server {{bootstrap}} --topic {{topic}}"
+    variables:
+      - {name: bootstrap, label: Bootstrap Servers, type: text, default: KAFKA_BOOTSTRAP_SERVERS}
+      - {name: topic, label: Topic, type: text, default: KAFKA_TOPIC}
+    tags: [producer, message]
+    platform: all
+    risk_level: write
+
+  - id: kafka-offset-reset-plan
+    trigger: :kafka-offset-reset-plan
+    title: 预览 Offset 重置
+    description: 使用 dry-run 预览消费者组 Offset 重置，不实际修改。
+    category: kafka
+    template: |-
+      kafka-consumer-groups.sh \
+        --bootstrap-server {{bootstrap}} \
+        --group {{group}} \
+        --topic {{topic}} \
+        --reset-offsets \
+        --to-earliest \
+        --dry-run
+    variables:
+      - {name: bootstrap, label: Bootstrap Servers, type: text, default: KAFKA_BOOTSTRAP_SERVERS}
+      - {name: group, label: Consumer Group, type: text, default: KAFKA_CONSUMER_GROUP}
+      - {name: topic, label: Topic, type: text, default: KAFKA_TOPIC}
+    tags: [offset, reset, dry-run]
+    platform: all
+    risk_level: read

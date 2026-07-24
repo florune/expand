@@ -1,0 +1,48 @@
+version: 1
+entries:
+  - id: nginx-test-config
+    trigger: :nginx-test
+    title: 检查 Nginx 配置
+    description: 只执行语法和引用文件检查，不 reload。
+    category: nginx
+    template: "sudo nginx -t"
+    tags: [config, check]
+    platform: linux
+    risk_level: read
+    favorite: true
+
+  - id: nginx-reload
+    trigger: :nginx-reload
+    title: 重新加载 Nginx
+    description: 在不中断现有连接的情况下重新加载配置。
+    category: nginx
+    template: "sudo nginx -t && sudo systemctl reload nginx"
+    tags: [config, reload]
+    platform: linux
+    risk_level: write
+
+  - id: nginx-access-log
+    trigger: :nginx-access-log
+    title: 跟踪访问日志
+    description: 持续查看 Nginx 访问日志。
+    category: nginx
+    template: "sudo tail -n {{lines}} -F {{file}}"
+    variables:
+      - {name: lines, label: 初始行数, type: text, default: "200"}
+      - {name: file, label: 日志文件, type: text, default: /var/log/nginx/access.log}
+    tags: [access, logs]
+    platform: linux
+    risk_level: read
+
+  - id: nginx-error-log
+    trigger: :nginx-error-log
+    title: 跟踪错误日志
+    description: 持续查看 Nginx 错误日志。
+    category: nginx
+    template: "sudo tail -n {{lines}} -F {{file}}"
+    variables:
+      - {name: lines, label: 初始行数, type: text, default: "200"}
+      - {name: file, label: 日志文件, type: text, default: /var/log/nginx/error.log}
+    tags: [error, logs, debug]
+    platform: linux
+    risk_level: read

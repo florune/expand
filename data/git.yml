@@ -1,0 +1,42 @@
+version: 1
+entries:
+  - id: git-status-short
+    trigger: :git-status
+    title: 查看 Git 状态
+    description: 使用紧凑格式显示分支和工作区变更。
+    category: git
+    template: "git status --short --branch"
+    tags: [status, branch]
+    platform: all
+    risk_level: read
+    favorite: true
+
+  - id: git-log-graph
+    trigger: :git-log
+    title: 查看提交图
+    description: 查看最近 20 条提交、分支和标签关系。
+    category: git
+    template: "git log --graph --decorate --oneline --all -20"
+    tags: [log, history, graph]
+    platform: all
+    risk_level: read
+
+  - id: git-diff-stat
+    trigger: :git-diff-stat
+    title: 查看变更统计
+    description: 查看尚未暂存的文件和行数变化。
+    category: git
+    template: "git diff --stat"
+    tags: [diff, stat]
+    platform: all
+    risk_level: read
+
+  - id: git-branches
+    trigger: :git-branches
+    title: 查看最近分支
+    description: 按最近提交时间查看本地分支。
+    category: git
+    template: "git branch --sort=-committerdate --format=\"%(committerdate:relative) %(refname:short)\""
+    tags: [branch, recent]
+    platform: all
+    risk_level: read

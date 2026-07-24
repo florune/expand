@@ -1,0 +1,51 @@
+version: 1
+entries:
+  - id: ai-debug
+    trigger: :ai_debug
+    title: Codex Debug 上下文
+    description: 用事实、期望和边界组织一次可复现的问题排查请求。
+    category: ai
+    template: |-
+      请先分析，不要直接修改代码。
+
+      项目：{{project}}
+      问题现象：{{symptom}}
+      期望行为：{{expected}}
+      复现方式：{{reproduce}}
+      最近变更：{{changes}}
+      已知约束：{{constraints}}
+
+      请先定位根因，列出证据、影响范围和最小修复方案。日志和配置中的密码、Token、Cookie、完整 DSN 需要视为敏感信息。
+    variables:
+      - name: project
+        label: 项目
+        type: text
+        default: PROJECT_NAME
+        required: true
+      - name: symptom
+        label: 问题现象
+        type: textarea
+        default: PROBLEM_DESCRIPTION
+        required: true
+      - name: expected
+        label: 期望行为
+        type: textarea
+        default: EXPECTED_BEHAVIOR
+        required: true
+      - name: reproduce
+        label: 复现方式
+        type: textarea
+        default: REPRODUCTION_STEPS
+        required: true
+      - name: changes
+        label: 最近变更
+        type: textarea
+        default: 未知
+      - name: constraints
+        label: 已知约束
+        type: textarea
+        default: 只处理当前问题，不重构无关代码。
+    tags: [codex, debug, context]
+    platform: all
+    risk_level: safe
+    favorite: true

@@ -1,0 +1,32 @@
+version: 1
+entries:
+  - id: common-today
+    trigger: :today
+    title: 今日日期模板
+    description: 自动生成适合日志、发布记录和工作说明的当前日期。
+    category: common
+    template: "{{date}}"
+    variables:
+      - name: date
+        label: 日期
+        type: date
+        format: "2006-01-02"
+    tags: [date, log]
+    platform: all
+    risk_level: safe
+    favorite: true
+  - id: common-timestamp
+    trigger: :timestamp
+    title: 当前时间
+    description: 生成适合发布记录和排查笔记的本地时间。
+    category: common
+    template: "{{datetime}}"
+    variables:
+      - name: datetime
+        label: 日期时间
+        type: date
+        format: "2006-01-02 15:04:05"
+    tags: [date, time, log]
+    platform: all
+    risk_level: safe
+    favorite: true

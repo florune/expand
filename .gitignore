@@ -27,6 +27,18 @@ go.work.sum
 # env file
 .env
 
+# Wails / frontend build output
+frontend/node_modules/
+frontend/dist/
+build/bin/
+.gocache/
+
+# Local encrypted vaults and machine-specific data
+*.enc
+data/private/
+/profiles.json
+/profiles/
+
 # Editor/IDE
-# .idea/
+.idea/
 # .vscode/

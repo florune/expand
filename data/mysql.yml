@@ -1,0 +1,96 @@
+version: 1
+entries:
+  - id: mysql-connect
+    trigger: :mysql-connect
+    title: 连接 MySQL
+    description: 生成不含明文密码的连接命令；未配置时保留明显占位符。
+    category: mysql
+    template: "mysql --host={{MYSQL_HOST}} --port={{MYSQL_PORT}} --user={{MYSQL_USER}} -p {{MYSQL_DATABASE}}"
+    variables:
+      - {name: MYSQL_HOST, label: 主机, type: text, default: MYSQL_HOST, required: true}
+      - {name: MYSQL_PORT, label: 端口, type: text, default: "3306"}
+      - {name: MYSQL_USER, label: 用户名, type: text, default: MYSQL_USER, required: true}
+      - {name: MYSQL_DATABASE, label: 数据库, type: text, default: MYSQL_DATABASE, required: true}
+    tags: [connect, cli]
+    platform: all
+    risk_level: safe
+    favorite: true
+
+  - id: mysql-show-processlist
+    trigger: :mysql-processlist
+    title: 查看活跃连接
+    description: 查看当前 MySQL 会话、状态和执行时长。
+    category: mysql
+    template: "mysql --host={{MYSQL_HOST}} --port={{MYSQL_PORT}} --user={{MYSQL_USER}} -p -e \"SHOW FULL PROCESSLIST;\""
+    variables:
+      - {name: MYSQL_HOST, label: 主机, type: text, default: MYSQL_HOST}
+      - {name: MYSQL_PORT, label: 端口, type: text, default: "3306"}
+      - {name: MYSQL_USER, label: 用户名, type: text, default: MYSQL_USER}
+    tags: [processlist, debug, connection]
+    platform: all
+    risk_level: read
+    favorite: true
+
+  - id: mysql-show-databases
+    trigger: :mysql-databases
+    title: 查看数据库列表
+    description: 连接 MySQL 并列出所有数据库。
+    category: mysql
+    template: "mysql --host={{MYSQL_HOST}} --port={{MYSQL_PORT}} --user={{MYSQL_USER}} -p -e \"SHOW DATABASES;\""
+    variables:
+      - {name: MYSQL_HOST, label: 主机, type: text, default: MYSQL_HOST}
+      - {name: MYSQL_PORT, label: 端口, type: text, default: "3306"}
+      - {name: MYSQL_USER, label: 用户名, type: text, default: MYSQL_USER}
+    tags: [database, schema]
+    platform: all
+    risk_level: read
+
+  - id: mysql-show-tables
+    trigger: :mysql-tables
+    title: 查看数据表
+    description: 查看指定数据库中的数据表。
+    category: mysql
+    template: "mysql --host={{MYSQL_HOST}} --port={{MYSQL_PORT}} --user={{MYSQL_USER}} -p {{MYSQL_DATABASE}} -e \"SHOW TABLES;\""
+    variables:
+      - {name: MYSQL_HOST, label: 主机, type: text, default: MYSQL_HOST}
+      - {name: MYSQL_PORT, label: 端口, type: text, default: "3306"}
+      - {name: MYSQL_USER, label: 用户名, type: text, default: MYSQL_USER}
+      - {name: MYSQL_DATABASE, label: 数据库, type: text, default: MYSQL_DATABASE}
+    tags: [table, schema]
+    platform: all
+    risk_level: read
+
+  - id: mysql-table-size
+    trigger: :mysql-table-size
+    title: 查看表占用空间
+    description: 按空间占用倒序查看指定数据库中的表。
+    category: mysql
+    template: >-
+      mysql --host={{MYSQL_HOST}} --port={{MYSQL_PORT}} --user={{MYSQL_USER}} -p -e
+      "SELECT table_name, ROUND((data_length + index_length) / 1024 / 1024, 2) AS size_mb
+      FROM information_schema.tables WHERE table_schema = '{{MYSQL_DATABASE}}'
+      ORDER BY data_length + index_length DESC;"
+    variables:
+      - {name: MYSQL_HOST, label: 主机, type: text, default: MYSQL_HOST}
+      - {name: MYSQL_PORT, label: 端口, type: text, default: "3306"}
+      - {name: MYSQL_USER, label: 用户名, type: text, default: MYSQL_USER}
+      - {name: MYSQL_DATABASE, label: 数据库, type: text, default: MYSQL_DATABASE}
+    tags: [table, size, storage]
+    platform: all
+    risk_level: read
+
+  - id: mysql-dump
+    trigger: :mysql-dump
+    title: 导出数据库
+    description: 使用事务一致性选项导出指定数据库，不在命令中包含密码。
+    category: mysql
+    template: "mysqldump --host={{MYSQL_HOST}} --port={{MYSQL_PORT}} --user={{MYSQL_USER}} -p --single-transaction --routines --triggers {{MYSQL_DATABASE}} > {{MYSQL_OUTPUT}}"
+    variables:
+      - {name: MYSQL_HOST, label: 主机, type: text, default: MYSQL_HOST}
+      - {name: MYSQL_PORT, label: 端口, type: text, default: "3306"}
+      - {name: MYSQL_USER, label: 用户名, type: text, default: MYSQL_USER}
+      - {name: MYSQL_DATABASE, label: 数据库, type: text, default: MYSQL_DATABASE}
+      - {name: MYSQL_OUTPUT, label: 输出文件, type: text, default: MYSQL_DATABASE.sql}
+    tags: [backup, dump, export]
+    platform: all
+    risk_level: read

@@ -1,0 +1,84 @@
+version: 1
+entries:
+  - id: redis-connect
+    trigger: :redis-connect
+    title: 连接 Redis
+    description: 使用 redis-cli 连接单机或集群节点；密码仍由客户端交互提供。
+    category: redis
+    template: "redis-cli -c -h {{host}} -p {{port}}"
+    variables:
+      - {name: host, label: 主机, type: text, default: REDIS_HOST}
+      - {name: port, label: 端口, type: text, default: "6379"}
+    tags: [connect, cli, cluster]
+    platform: all
+    risk_level: safe
+    favorite: true
+
+  - id: redis-info
+    trigger: :redis-info
+    title: 查看 Redis 信息
+    description: 查看 Redis 服务、内存、复制和持久化状态。
+    category: redis
+    template: "redis-cli -h {{host}} -p {{port}} INFO"
+    variables:
+      - {name: host, label: 主机, type: text, default: REDIS_HOST}
+      - {name: port, label: 端口, type: text, default: "6379"}
+    tags: [info, health, debug]
+    platform: all
+    risk_level: read
+    favorite: true
+
+  - id: redis-cluster-info
+    trigger: :redis-cluster-info
+    title: 查看 Cluster 状态
+    description: 查看 Redis Cluster 是否正常及槽位分配状态。
+    category: redis
+    template: "redis-cli -c -h {{host}} -p {{port}} CLUSTER INFO"
+    variables:
+      - {name: host, label: 节点主机, type: text, default: REDIS_HOST}
+      - {name: port, label: 端口, type: text, default: "6379"}
+    tags: [cluster, health]
+    platform: all
+    risk_level: read
+
+  - id: redis-cluster-nodes
+    trigger: :redis-cluster-nodes
+    title: 查看 Cluster 节点
+    description: 查看集群节点、角色、连接状态和槽位范围。
+    category: redis
+    template: "redis-cli -c -h {{host}} -p {{port}} CLUSTER NODES"
+    variables:
+      - {name: host, label: 节点主机, type: text, default: REDIS_HOST}
+      - {name: port, label: 端口, type: text, default: "6379"}
+    tags: [cluster, nodes, slots]
+    platform: all
+    risk_level: read
+
+  - id: redis-scan
+    trigger: :redis-scan
+    title: 安全扫描 Key
+    description: 使用 SCAN 分批查找 Key，避免直接执行 KEYS。
+    category: redis
+    template: "redis-cli -h {{host}} -p {{port}} --scan --pattern '{{pattern}}' --count {{count}}"
+    variables:
+      - {name: host, label: 主机, type: text, default: REDIS_HOST}
+      - {name: port, label: 端口, type: text, default: "6379"}
+      - {name: pattern, label: Key 模式, type: text, default: "KEY_PATTERN*"}
+      - {name: count, label: 每批数量, type: text, default: "100"}
+    tags: [scan, key, debug]
+    platform: all
+    risk_level: read
+
+  - id: redis-memory-usage
+    trigger: :redis-memory
+    title: 查看 Key 内存占用
+    description: 查看指定 Key 的估算内存占用。
+    category: redis
+    template: "redis-cli -h {{host}} -p {{port}} MEMORY USAGE {{key}} SAMPLES 5"
+    variables:
+      - {name: host, label: 主机, type: text, default: REDIS_HOST}
+      - {name: port, label: 端口, type: text, default: "6379"}
+      - {name: key, label: Key, type: text, default: REDIS_KEY}
+    tags: [memory, key]
+    platform: all
+    risk_level: read
